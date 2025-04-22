@@ -1,0 +1,33 @@
+networks:
+  my-network:
+    driver: bridge
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: Manas098#
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pManas098#" ]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+    networks:
+      - my-network
+
+  service-registry:
+    build: ./service-registry
+    image: cricbuzz-service-registry
+    container_name: service-registry
+    ports:
+      - "8761:8761"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+    networks:
+      - my-network
